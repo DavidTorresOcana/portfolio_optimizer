@@ -20,8 +20,8 @@ SOURCE_ADJCLOSE_MAP = {"quandl": "AdjClose",
                        "yahoo": "Adj Close"}
 
 DATA_SOURCE = "yahoo"
-START_DATE = "2019/01/01"
-END_DATE = "2019/12/31"
+START_DATE = "2020/01/01"
+END_DATE = "2021/06/30"
 
 # Pipeline
 NUM_SIMULATION_POINTS = 200
@@ -219,10 +219,11 @@ for i, best_index in enumerate([best_sharperatio_idx, best_returns_idx, best_vol
 
 @cursor.connect("add")
 def on_add(sel):
-    target_ = np.array(sel.target)
+    target = sel.target
+    target_ = np.array([target]).T
     target_[1] /= PERCENTAGE_MULTPLIER
 
-    diff = np.linalg.norm(frontier_points - np.array([target_]).T, axis=0)
+    diff = np.linalg.norm(frontier_points - target_, axis=0)
     best_index = diff.argmin()
     best_weights = weights_allocations[best_index, :]
 
@@ -239,7 +240,8 @@ def on_add(sel):
             f" r: {round(expected_return, 3)}% \n σ: {round(frontier_volatilities[best_index], 3)}" \
             f"\n sharpe ratio: {round(frontier_sharpe_ratios[best_index], 3)}"
     sel.annotation.set(text=text_)
-    
+    sel.annotation.xy = [frontier_volatilities[best_index], expected_return]
+
     with open(f"output_selected_solution.csv", "w") as csvfile:
         w = csv.DictWriter(csvfile, best_solution.keys())
         w.writeheader()
