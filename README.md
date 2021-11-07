@@ -1,5 +1,5 @@
 # portfolio_optimizer
-A portfolio optimizar based made in Python
+A portfolio optimizer made with Python
 
 
 ![Solutions](assets/Figure_1.png)
